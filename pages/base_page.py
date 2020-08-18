@@ -9,15 +9,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class BasePage(object):
-    PAGE_LOADED_1 = (By.CSS_SELECTOR, "ngx-ui-loader div.ngx-overlay.loading-foreground")
-    PAGE_LOADED_2 = (By.CSS_SELECTOR, "ngx-ui-loader div.ngx-overlay.foreground-closing")
-    PAGE_LOADED_3 = (By.CSS_SELECTOR, "ngx-ui-loader div.ngx-overlay")
+class BasePage:
+    LOGIN_BUTTON = (By.XPATH, '//button[contains(text(), "Войти")]')
+    EMAIL_FIELD = (By.CSS_SELECTOR, '#passp-field-login')
+    PASSW_FIELD = (By.CSS_SELECTOR, '#passp-field-passwd')
+    SUBMIT_BUTTON = (By.XPATH, '//button[@type="submit"]')
+    SKIP_PHONE_BUTTON = (By.XPATH, '//button[@type="button"]')
 
-    TAKE_TEST_BUTTON = (By.CSS_SELECTOR, ".t228__right_buttons_but a.t-btn ")
-    MOBILE_FIELD = (By.CSS_SELECTOR, "#mat-input-1")
-    CHECKBOX = (By.CSS_SELECTOR, ".mat-checkbox-inner-container")
-    GET_A_CODE_BUTTON = (By.CSS_SELECTOR, "button")
 
     def __init__(self, driver, url=None):
         self.driver = driver
@@ -69,6 +67,26 @@ class BasePage(object):
             except TimeoutException:
                 return False
             return True
+
+    def _set_email(self, email):
+        with allure.step(f"Отправка {email} в {self.EMAIL_FIELD}"):
+            self.find(locator=self.EMAIL_FIELD).send_keys(email)
+
+    def _set_passw(self, passw):
+        with allure.step(f"Отправка {passw} в {self.PASSW_FIELD}"):
+            self.find(locator=self.PASSW_FIELD).send_keys(passw)
+
+    def login(self, email, passw):
+        with allure.step(f"Нажатие на 'Войти' на главной странице"):
+            self.find(locator=self.LOGIN_BUTTON).click()
+        self._set_email(email)
+        with allure.step(f"Нажимаю кнопку {self.SUBMIT_BUTTON}"):
+            self.find(locator=self.SUBMIT_BUTTON).click()
+        self._set_passw(passw)
+        with allure.step(f"Нажимаю кнопку {self.SUBMIT_BUTTON}"):
+            self.find(locator=self.SUBMIT_BUTTON).click()
+        # with allure.step(f"Пропуск предложения привязать телефон"):
+        #     self.find(locator=self.SKIP_PHONE_BUTTON).click()
 
     def open(self):
         with allure.step(f"Переход на страницу, {self.base_url}"):

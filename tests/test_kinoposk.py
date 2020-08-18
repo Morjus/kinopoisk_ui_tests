@@ -1,7 +1,7 @@
 import pytest
 import allure
-from pages.base_page import BasePage
 from pages.main_page import MainPage
+from pages.movie_page import MoviePage
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,15 +15,26 @@ import time
 def test_login(browser):
     page = MainPage(browser, url="https://www.kinopoisk.ru/")
     page.open()
-    header = page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
-    assert header == "Главное сегодня"
+    page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+
+    header = page.check_main_header()
+    assert header == "Главное сегодня", f"Заголовок 'Главное сегодня' не найден. Найдено: {header}"
 
 
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Рейтинг фильма")
-@allure.story("Выставление рейтинга фильма авторизованного пользователя")
-def test_set_rating():
-    pass
+@allure.story("Выставление оценки фильму авторизованного пользователя и удаление оценки")
+@pytest.mark.parametrize("rating", [10])
+def test_set_rating(browser, rating):
+    page = MoviePage(browser, url="https://www.kinopoisk.ru/film/693969/")
+    page.open()
+    page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+
+    page.set_rating(rating)
+    result_rating = page.check_rating_on_page()
+    assert int(result_rating) == rating, f"Оценка на странице: {result_rating} не соответствует ожидаемой {rating}"
+    page.delete_rating_on_page()
+    assert page.check_rating_is_not_presented() is True, "Оценка фильма не удалена"
 
 
 @allure.epic("Возможности авторизованного юзера")
