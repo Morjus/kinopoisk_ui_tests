@@ -16,7 +16,6 @@ class BasePage:
     SUBMIT_BUTTON = (By.XPATH, '//button[@type="submit"]')
     SKIP_PHONE_BUTTON = (By.XPATH, '//button[@type="button"]')
 
-
     def __init__(self, driver, url=None):
         self.driver = driver
         self.base_url = url
@@ -49,7 +48,7 @@ class BasePage:
                 return False
             return True
 
-    def is_not_element_present(self, locator, time=5):
+    def is_not_element_present(self, locator, time=10):
         with allure.step(f"Поиск элемента, которого не должно быть на странице, {locator}"):
             try:
                 WebDriverWait(self.driver, time).until(

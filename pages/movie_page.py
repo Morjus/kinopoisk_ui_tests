@@ -8,15 +8,29 @@ class MoviePage(BasePage):
     STARS = (By.CSS_SELECTOR, '[name="star"]+span')
     MY_RATING = (By.CSS_SELECTOR, 'div h4+span')
     DELETE_RATING = (By.XPATH, '//button[contains(text(), "Удалить")]')
+    WATCH_LATER = (By.XPATH, '//button[contains(text(), "Буду смотреть")]')
+    WATCH_LATER_LINK = (By.XPATH, '//a[contains(text(), "Буду смотреть")]')
+    WATCH_LATER_HEADER = (By.XPATH, '//p/span[contains(text(), "Буду смотреть")]')
+    MOVIE_NAME = (By.XPATH, '//h1/span[contains(text(), "")]')
+    FIRST_MOVIE_IN_LIST = (By.CSS_SELECTOR, '.info .name')
 
     def __init__(self, driver, url):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+
         self.number = None
+        self.movie_name = None
+
+    def get_movie_name(self):
+        with allure.step("Выставляю русское имя фильма из заголовка в атрибуты объекта"):
+            movie_name = self.find(locator=self.MOVIE_NAME).text
+            self.movie_name = movie_name
+            return movie_name
 
     def set_rating(self, number: int):
         self.number = number
+        self.movie_name = self.get_movie_name()
 
         with allure.step("Поиск звезд для выставления рейтинга"):
             stars = self.finds(locator=self.STARS)
@@ -35,5 +49,15 @@ class MoviePage(BasePage):
             self.find(locator=self.DELETE_RATING).click()
 
     def check_rating_is_not_presented(self):
-        res = self.is_not_element_present(locator=MoviePage.MY_RATING)
+        res = self.is_not_element_present(locator=self.MY_RATING)
         return res
+
+    def add_to_watch_later(self):
+        with allure.step("Ищу кнопку добавления в список 'Буду смотреть' и нажимаю"):
+            self.find(locator=self.WATCH_LATER).click()
+
+    def go_to_watch_later_list(self):
+        with allure.step("Ищу ссылку на список 'Буду смотреть' и нажимаю"):
+            self.find(locator=self.WATCH_LATER_LINK).click()
+        with allure.step("Ищу заголовок страницы 'Буду смотреть'"):
+            self.find(locator=self.WATCH_LATER_HEADER)

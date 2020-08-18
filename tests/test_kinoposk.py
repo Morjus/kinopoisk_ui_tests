@@ -2,6 +2,7 @@ import pytest
 import allure
 from pages.main_page import MainPage
 from pages.movie_page import MoviePage
+from pages.user_page import UserPage
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -39,9 +40,23 @@ def test_set_rating(browser, rating):
 
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Папки с фильмами юзера")
-@allure.story()
-def test_add_to_see_later():
-    pass
+@allure.story("Добавление фильма в папку 'Смотреть позже' и его удаление")
+def test_add_to_watch_later(browser):
+    page = MoviePage(browser, url="https://www.kinopoisk.ru/film/693969/")
+    page.open()
+    page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+
+    page.add_to_watch_later()
+    movie_name = page.get_movie_name()
+    page.go_to_watch_later_list()
+    page = UserPage(page.driver, page.driver.current_url)
+    page.open()
+    name = page.get_first_movie_in_watch_later_list()
+    assert movie_name == name, f"Имена {movie_name} на странице фильма и {name} в списке 'Буду смотреть' не совпадают"
+
+    result = page.del_first_from_watch_later()
+    assert result is True, f"Фильм из списка не удален"
+
 
 
 @allure.epic("Возможности авторизованного юзера")
