@@ -1,6 +1,7 @@
 import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+import time
 
 
 class UserPage(BasePage):
@@ -23,9 +24,11 @@ class UserPage(BasePage):
         with allure.step("Удаляю первый фильм из списка 'Буду смотреть'"):
             self.find(locator=self.SELECTION_LISTS).click()
             self.find(locator=self.WATCH_LATER_LIST).click()
-        # with allure.step("Проверяю, что элемент удаляется"):
-        #     result = self.is_disappeared(locator=self.FIRST_MOVIE_IN_LIST, time=10)
-        #     return result
+            time.sleep(1)  # bad practice
+            self.driver.refresh()
+        with allure.step("Проверяю, что элемент удален"):
+            result = self.is_not_element_present(locator=self.FIRST_MOVIE_IN_LIST, time=10)
+            return result
 
     def check_movie_is_not_presented(self):
         res = self.is_not_element_present(locator=self.FIRST_MOVIE_IN_LIST).text

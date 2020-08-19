@@ -3,6 +3,8 @@ import allure
 from pages.main_page import MainPage
 from pages.movie_page import MoviePage
 from pages.user_page import UserPage
+from pages.recommendation_page import RecommendationPage
+from pages.hd_page import HdPage
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -34,6 +36,7 @@ def test_set_rating(browser, rating):
     page.set_rating(rating)
     result_rating = page.check_rating_on_page()
     assert int(result_rating) == rating, f"Оценка на странице: {result_rating} не соответствует ожидаемой {rating}"
+
     page.delete_rating_on_page()
     assert page.check_rating_is_not_presented() is True, "Оценка фильма не удалена"
 
@@ -42,28 +45,37 @@ def test_set_rating(browser, rating):
 @allure.feature("Папки с фильмами юзера")
 @allure.story("Добавление фильма в папку 'Смотреть позже' и его удаление")
 def test_add_to_watch_later(browser):
-    page = MoviePage(browser, url="https://www.kinopoisk.ru/film/693969/")
-    page.open()
-    page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+    movie_page = MoviePage(browser, url="https://www.kinopoisk.ru/film/693969/")
+    movie_page.open()
+    movie_page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
 
-    page.add_to_watch_later()
-    movie_name = page.get_movie_name()
-    page.go_to_watch_later_list()
-    page = UserPage(page.driver, page.driver.current_url)
-    page.open()
-    name = page.get_first_movie_in_watch_later_list()
+    movie_page.add_to_watch_later()
+    movie_name = movie_page.get_movie_name()
+    movie_page.go_to_watch_later_list()
+    user_page = UserPage(movie_page.driver, movie_page.driver.current_url)
+    name = user_page.get_first_movie_in_watch_later_list()
     assert movie_name == name, f"Имена {movie_name} на странице фильма и {name} в списке 'Буду смотреть' не совпадают"
 
-    result = page.del_first_from_watch_later()
+    result = user_page.del_first_from_watch_later()
     assert result is True, f"Фильм из списка не удален"
-
 
 
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Смотреть онлайн на кинопоиск HD")
-@allure.story("Переход из рекомендаций сразу к просмотру фильма онлайн")
-def test_from_recommends_go_to_online():
-    pass
+@allure.story("Переход из рекомендаций сразу к просмотру фильма онлайн по плюс подписке")
+def test_from_recommends_go_to_online(browser):
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    main_page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+    main_page.go_to_recommendations()
+
+    recom_page = RecommendationPage(main_page.driver, main_page.driver.current_url)
+    recom_page.switch_tab_to_online()
+    recom_page.go_to_watch_online_random_movie_from_list()
+
+    hd_page = HdPage(recom_page.driver, recom_page.driver.current_url)
+    movie_name = hd_page.get_name_of_opened_movie()
+    assert movie_name is not None, f"Названия фильма на странице нет, есть {movie_name}"
 
 
 @allure.epic("Возможности авторизованного юзера")
