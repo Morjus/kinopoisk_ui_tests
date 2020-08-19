@@ -16,7 +16,7 @@ class HdPage(BasePage):
     CHILD_NAME = (By.CSS_SELECTOR, '#name')
     NEXT_BUTTON = (By.XPATH, '//button/span[contains(text(), "Далее")]')
 
-    PAY_IFRAME = (By.CSS_SELECTOR, 'body[cz-shortcut-listen="true"]') # 'body[cz-shortcut-listen="true"] .ReactModalPortal [class*="ReactModal"]')
+    PAY_IFRAME = (By.CSS_SELECTOR, 'body[cz-shortcut-listen="true"]')
     PAY_HEADER = (By.XPATH, "//div/span/h1")
 
     def __init__(self, driver, url):

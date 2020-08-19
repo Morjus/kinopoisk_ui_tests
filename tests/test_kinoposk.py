@@ -1,27 +1,30 @@
 import pytest
 import allure
+from pages.header_page import HeaderPage
 from pages.main_page import MainPage
 from pages.movie_page import MoviePage
 from pages.user_page import UserPage
 from pages.recommendation_page import RecommendationPage
 from pages.hd_profiles_page import HdProfilesPage
 from pages.hd_page import HdPage
+from pages.search_page import SearchPage
+from pages.media_page import MediaPage
 import os
 from dotenv import load_dotenv
-load_dotenv()
 
-import time
+load_dotenv()
 
 
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Авторизация")
 @allure.story("Авторизация с валидными данными")
 def test_login(browser):
-    page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    page = HeaderPage(browser, url="https://www.kinopoisk.ru/")
     page.open()
     page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
 
-    header = page.check_main_header()
+    main_page = MainPage(page.driver, page.driver.current_url)
+    header = main_page.check_main_header()
     assert header == "Главное сегодня", f"Заголовок 'Главное сегодня' не найден. Найдено: {header}"
 
 
@@ -116,15 +119,30 @@ def test_promocode(browser):
 @allure.epic("Поиск")
 @allure.feature("Поисковая строка")
 @allure.story("Правильное название фильма в поиске ведет к результатам, где введенный в поиск фильм на первом месте")
-def test_search():
-    pass
+def test_search(browser):
+    name = "Аватар"
+
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    main_page.search_movie(name)
+
+    search_page = SearchPage(main_page.driver, main_page.driver.current_url)
+    found_movie = search_page.check_guessing_of_search()
+    assert found_movie == name, f"Попытка угадать неверная, предложен {found_movie}"
 
 
 @allure.epic("Статьи")
 @allure.feature("Тесты")
 @allure.story("Прохождение теста в статье приводит к результу")
-def test_pass_tests():
-    pass
+def test_pass_quiz(browser):
+    media_page = MediaPage(browser, url="https://www.kinopoisk.ru/media/")
+    media_page.open()
+
+    media_page.go_to_tests_tab()
+    media_page.choice_random_test()
+
+    result = media_page.pass_test()
+    assert isinstance(result, str), f"Результат квиза не найден. Получено: {result}"
 
 
 @allure.epic("Кинотеатры")
