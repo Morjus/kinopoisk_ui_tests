@@ -53,3 +53,6 @@ class HdProfilesPage(BasePage):
             self.is_disappeared(locator=self.CANCEL_BUTTON, time=5)
         with allure.step("Ищу заголовок после регистрации"):
             return self.find(locator=self.CARTOON_WORLD_HEADER).text
+
+    def delete_child_profile(self):
+        pass

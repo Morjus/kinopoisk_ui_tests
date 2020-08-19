@@ -10,8 +10,14 @@ class HdPage(BasePage):
     CREATE_CHILD_PROFILE_LINK = (By.CSS_SELECTOR, "ul[class^='ProfileMenu'] a[href^='/create-profiles']")
     CREATE_CHILD_HEADER = (By.XPATH, '//div/h1[contains(text(), "Как зовут ребенка?")]')
 
+    PROMO = (By.CSS_SELECTOR, "div div a[href^='/special']")
+    BUTTONS_ON_PROMO_PAGE = (By.CSS_SELECTOR, "section[class^='Landing'] button")
+
     CHILD_NAME = (By.CSS_SELECTOR, '#name')
     NEXT_BUTTON = (By.XPATH, '//button/span[contains(text(), "Далее")]')
+
+    PAY_IFRAME = (By.CSS_SELECTOR, 'body[cz-shortcut-listen="true"]') # 'body[cz-shortcut-listen="true"] .ReactModalPortal [class*="ReactModal"]')
+    PAY_HEADER = (By.XPATH, "//div/span/h1")
 
     def __init__(self, driver, url):
         super().__init__(driver, url)
@@ -33,4 +39,18 @@ class HdPage(BasePage):
             self.find(locator=self.CREATE_CHILD_PROFILE_LINK).click()
         with allure.step("Смотрю, что заголовок спрашивает 'Как зовут ребенка?'"):
             self.find(locator=self.CREATE_CHILD_HEADER)
+
+    def go_to_promo_page(self):
+        with allure.step("Открываю ссылку 'Спецпредложение'"):
+            self.find(locator=self.PROMO).click()
+        with allure.step("Перехожу к получению промокода"):
+            with allure.step("Переключаюсь на активную вкладку"):
+                self.driver.switch_to.window(self.driver.window_handles[1])
+
+    def pay_for_access(self):
+        with allure.step("Нажимаю на кнопку оформления"):
+            self.finds(locator=self.BUTTONS_ON_PROMO_PAGE)[0].click()
+        with allure.step("Беру заголовок в окошке оплаты"):
+            return self.find(locator=self.PAY_HEADER).text
+
 

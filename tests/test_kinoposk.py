@@ -100,8 +100,17 @@ def test_create_child_profile(browser):
 @allure.epic("Акции для юзеров")
 @allure.feature("Промокод")
 @allure.story("Проверка использования промокода")
-def test_promocode():
-    pass
+def test_promocode(browser):
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    main_page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+
+    main_page.go_to_hd()
+    hd_page = HdPage(main_page.driver, main_page.driver.current_url)
+    hd_page.go_to_promo_page()
+
+    header = hd_page.pay_for_access()
+    assert header == "Подписка Плюс Мульти с Амедиатекой", f"Заголовок найден, но иной:{header}"
 
 
 @allure.epic("Поиск")
