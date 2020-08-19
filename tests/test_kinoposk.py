@@ -4,6 +4,7 @@ from pages.main_page import MainPage
 from pages.movie_page import MoviePage
 from pages.user_page import UserPage
 from pages.recommendation_page import RecommendationPage
+from pages.hd_profiles_page import HdProfilesPage
 from pages.hd_page import HdPage
 import os
 from dotenv import load_dotenv
@@ -81,8 +82,19 @@ def test_from_recommends_go_to_online(browser):
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Детский профиль")
 @allure.story("Создание детского профиля")
-def test_create_child_profile():
-    pass
+def test_create_child_profile(browser):
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    main_page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+
+    main_page.go_to_hd()
+    hd_page = HdPage(main_page.driver, main_page.driver.current_url)
+    hd_page.go_to_create_child_profile()
+
+    create_profile_page = HdProfilesPage(hd_page.driver, hd_page.driver.current_url)
+    final_header = create_profile_page.create_child_profile("Зайка")
+    assert final_header == 'Волшебный мир мультфильмов скрыт за подпиской', f"Заголовок найден, но иной:{final_header}"
+    # should add method for removing profile
 
 
 @allure.epic("Акции для юзеров")

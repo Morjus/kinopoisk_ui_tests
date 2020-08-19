@@ -8,6 +8,8 @@ class MainPage(BasePage):
     RECOMMENDATION_LINK = (By.XPATH, '//h3/a[contains(text(), "Рекомендации")]')
     RECOMMENDATION_HEADER = (By.XPATH, '//h1[contains(text(), "Рекомендации")]')
     ONLINE_TAB = (By.XPATH, '//span[contains(text(), "Онлайн")]')
+    HD_LINK = (By.XPATH, '//a[contains(text(), "Онлайн-кинотеатр")]')
+    MY_BUYS = (By.XPATH, '//a[contains(text(), "Мои покупки")]')
 
     def __init__(self, driver, url):
         super().__init__(driver, url)
@@ -35,7 +37,10 @@ class MainPage(BasePage):
         pass
 
     def go_to_hd(self):
-        pass
+        with allure.step("Перехожу в онлайн кинотеатр"):
+            self.find(locator=self.HD_LINK).click()
+        with allure.step("Смотрю, что на странице есть вкладка 'Мои покупки'"):
+            self.find(locator=self.MY_BUYS)
 
     def search_movie(self):
         pass
