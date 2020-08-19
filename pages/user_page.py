@@ -1,10 +1,11 @@
 import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+from pages.header_page import HeaderPage
 import time
 
 
-class UserPage(BasePage):
+class UserPage(HeaderPage):
     FIRST_MOVIE_IN_LIST = (By.CSS_SELECTOR, '.info .name')
     SELECTION_LISTS = (By.CSS_SELECTOR, 'div .select')
     WATCH_LATER_LIST = (By.CSS_SELECTOR, '.public-folder.slc')

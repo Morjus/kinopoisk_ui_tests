@@ -1,15 +1,16 @@
 import allure
 from selenium.webdriver.common.by import By
-from pages.base_page import BasePage
+from pages.header_page import HeaderPage
 
 
-class MainPage(BasePage):
+class MainPage(HeaderPage):
     MAIN_HEADER = (By.CSS_SELECTOR, 'section.main-page-media-block__main h1')
     RECOMMENDATION_LINK = (By.XPATH, '//h3/a[contains(text(), "Рекомендации")]')
     RECOMMENDATION_HEADER = (By.XPATH, '//h1[contains(text(), "Рекомендации")]')
     ONLINE_TAB = (By.XPATH, '//span[contains(text(), "Онлайн")]')
-    HD_LINK = (By.XPATH, '//a[contains(text(), "Онлайн-кинотеатр")]')
-    MY_BUYS = (By.XPATH, '//a[contains(text(), "Мои покупки")]')
+
+    SEARCH_FIELD = (By.CSS_SELECTOR, "input[type='text']")
+    SEARCH_BUTTON = (By.CSS_SELECTOR, 'button[type="submit"]')
 
     def __init__(self, driver, url):
         super().__init__(driver, url)
@@ -31,16 +32,4 @@ class MainPage(BasePage):
             self.find(locator=self.ONLINE_TAB)
 
     def go_to_get_tickets(self):
-        pass
-
-    def go_to_promo_code(self):
-        pass
-
-    def go_to_hd(self):
-        with allure.step("Перехожу в онлайн кинотеатр"):
-            self.find(locator=self.HD_LINK).click()
-        with allure.step("Смотрю, что на странице есть вкладка 'Мои покупки'"):
-            self.find(locator=self.MY_BUYS)
-
-    def search_movie(self):
         pass

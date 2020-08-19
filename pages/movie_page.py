@@ -1,9 +1,9 @@
 import allure
 from selenium.webdriver.common.by import By
-from pages.base_page import BasePage
+from pages.header_page import HeaderPage
 
 
-class MoviePage(BasePage):
+class MoviePage(HeaderPage):
 
     STARS = (By.CSS_SELECTOR, '[name="star"]+span')
     MY_RATING = (By.CSS_SELECTOR, 'div h4+span')
