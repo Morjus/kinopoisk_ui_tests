@@ -147,6 +147,9 @@ def test_pass_quiz(browser):
 
 @allure.epic("Кинотеатры")
 @allure.feature("Покупка билетов")
-@allure.story("Покупка билетов с главной страницы")
-def test_buy_tickets_from_main_page():
-    pass
+@allure.story("Покупка билетов в кинотеатр с главной страницы")
+def test_buy_tickets_from_main_page(browser):
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    # Сейчас нет этой карусели при открытии страницы
+    main_page.select_random_movie_from_today_in_cinema()
