@@ -36,7 +36,7 @@ class MediaPage(HeaderPage):
 
     def choice_random_test(self):
         with allure.step("Ищу все карточки с тестами"):
-            list_of_tests = self.finds(locator=self.TEST_CARDS)
+            list_of_tests = self.finds(locator=self.TEST_CARDS)[1:]
         with allure.step("Выбираю случайную карточку с тестом"):
             import random
             random.choice(list_of_tests).click()
@@ -50,8 +50,9 @@ class MediaPage(HeaderPage):
             frame = self.find(locator=self.TEST_FRAME, time=10)
             self.driver.switch_to.frame(frame)
         with allure.step("Считаю общее количество вопросов"):
-            some = self.find(locator=self.TOTAL_QUESTIONS).text
-            total_questions = int(some[-2:].strip())
+            count_questions = self.find(locator=self.TOTAL_QUESTIONS).text
+            count_questions = count_questions.split(" ")
+            total_questions = int(count_questions.pop().strip())
         with allure.step(f"Общее количество вопросов {total_questions}, случайно отвечаю на вопросы в цикле"):
 
             for _ in range(total_questions):
@@ -69,6 +70,11 @@ class MediaPage(HeaderPage):
                     pass
 
             try:
+                with allure.step(f"Выбираю случайный ответ"):
+                    answers = self.finds(locator=self.ANSWER_ITEMS, time=2)
+                    answer = choice(answers)
+                with allure.step(f"Выбран ответ {answer.text}"):
+                    answer.click()
                 with allure.step(f"Переход к последнему вопросу"):
                     self.find(locator=self.NEXT_QUESTION_BUTTON, time=1).click()
             except TimeoutException:

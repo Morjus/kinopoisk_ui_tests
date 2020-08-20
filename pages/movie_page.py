@@ -61,3 +61,6 @@ class MoviePage(HeaderPage):
             self.find(locator=self.WATCH_LATER_LINK).click()
         with allure.step("Ищу заголовок страницы 'Буду смотреть'"):
             self.find(locator=self.WATCH_LATER_HEADER)
+
+    def open_trailer(self):
+        pass

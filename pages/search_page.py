@@ -5,9 +5,11 @@ from pages.header_page import HeaderPage
 
 class SearchPage(HeaderPage):
 
-    MOST_WANTED_EL = (By.CSS_SELECTOR, ".element.most_wanted")
+    MOST_WANTED_EL = (By.CSS_SELECTOR, '.element.most_wanted .name [data-type="film"]')
     GUESS_HEADER = (By.XPATH, '//p[contains(text(), "Скорее")]')
     MOST_WANTED_NAME = (By.CSS_SELECTOR, ".element.most_wanted .info .name a")
+
+    MOVIE_PAGE_NAME_HEADER = (By.CSS_SELECTOR, 'h1[itemprop="name"] span')
 
     def __init__(self, driver, url):
         super().__init__(driver, url)
@@ -16,5 +18,11 @@ class SearchPage(HeaderPage):
 
     def check_guessing_of_search(self):
         self.is_element_present(locator=self.GUESS_HEADER)
-        self.find(locator=self.MOST_WANTED_EL)
-        return self.find(locator=self.MOST_WANTED_NAME).text
+        guess = self.find(locator=self.MOST_WANTED_EL)
+        return guess.text
+
+    def go_to_guessing_movie(self, movie_name):
+        movie_link = self.find(locator=self.MOST_WANTED_NAME)
+        movie_link.click()
+        assert movie_name == self.find(locator=self.MOVIE_PAGE_NAME_HEADER).text
+

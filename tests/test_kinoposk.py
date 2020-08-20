@@ -151,8 +151,24 @@ def test_pass_quiz(browser):
 def test_buy_tickets_from_main_page(browser):
     main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
     main_page.open()
-    # Сейчас нет этой карусели при открытии страницы
+    # Карусель с фильмами в кинотеатрах появляется не всегда
     main_page.select_random_movie_from_today_in_cinema()
     movie_in_pay_frame = main_page.buy_random_tickets()
-    assert main_page.movie_to_go == movie_in_pay_frame, f"Названия фильма в виджете оплаты не совпадает, " \
-                                                        f"получено {movie_in_pay_frame}"
+    assert main_page.movie_to_go == movie_in_pay_frame, f"Название фильма в виджете оплаты не совпадает с названием " \
+                                                        f"на главной, получено {movie_in_pay_frame}"
+
+
+@allure.epic("Страница фильма")
+@allure.feature("Трейлеры")
+@allure.story("Присутствие фильма на любой странце")
+@pytest.mark.parametrize("movie_to_search", ["Аватар"])
+def test_trailers(browser, movie_to_search):
+    search_page = SearchPage(browser, url="https://www.kinopoisk.ru/")
+    search_page.open()
+    search_page.search_movie(movie_to_search)
+
+    found_movie = search_page.check_guessing_of_search()
+    search_page.go_to_guessing_movie(found_movie)
+
+    movie_page = MoviePage(search_page.driver, search_page.driver.current_url)
+    movie_page.open_trailer()

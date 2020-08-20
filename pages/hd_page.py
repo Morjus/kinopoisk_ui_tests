@@ -30,7 +30,7 @@ class HdPage(BasePage):
             movie_name = element.get_attribute("alt")
 
         with allure.step(f"Открылся фильм: {movie_name}"):
-            print(movie_name)
+            return movie_name
 
     def go_to_create_child_profile(self):
         with allure.step("Открываю меню профиля через аватар"):
