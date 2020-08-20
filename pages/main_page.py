@@ -16,10 +16,14 @@ class MainPage(HeaderPage):
 
     INFO_ABOUT_SESSION_IN_ELEMENT = (By.CSS_SELECTOR, "span")
 
+    CINEMA_PAY_FRAME = (By.CSS_SELECTOR, "div iframe")
+    CINEMA_PAY_MOVIE_NAME = (By.CSS_SELECTOR, ".head_subtitle")
+
     def __init__(self, driver, url):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.movie_to_go = None
 
     def check_main_header(self):
         with allure.step(f"Ищу главный заголовок на странице"):
@@ -44,20 +48,25 @@ class MainPage(HeaderPage):
             selected_movie.click()
             movie_name = self.find(locator=self.CHOSEN_MOVIE_HEADER)
         with allure.step(f"Выбран фильм {movie_name.text}"):
-            print(movie_name.text)
+            self.movie_to_go = movie_name.text
 
     def buy_random_tickets(self):
         with allure.step("Ищу все сеансы фильма"):
             sessions = self.finds(locator=self.ALL_AVAILABLE_SESSIONS)
         with allure.step("Выбираю случайный сеанс"):
             random_session = choice(sessions)
-
-            info_about_session = random_session.finds(locator=self.INFO_ABOUT_SESSION_IN_ELEMENT)
+            info_about_session = random_session.find_elements_by_css_selector("span")
             time_of_session = info_about_session[0].text
             cost_of_session = info_about_session[1].text
-            print(time_of_session, cost_of_session)
+        with allure.step(f"Выбран сеанс в {time_of_session} за {cost_of_session}"):
+            random_session.click()
+        with allure.step(f"Переключение на окно оплаты"):
+            iframe = self.find(locator=self.CINEMA_PAY_FRAME)
+            self.driver.switch_to.frame(iframe)
+        with allure.step(f"Поиск имени фильма в окошке оплаты"):
+            movie_in_pay_frame = self.find(locator=self.CINEMA_PAY_MOVIE_NAME)
+            return movie_in_pay_frame.text
 
 
-        # with allure.step(f"Выбран сеанс в {random_session} за {random_session}")
 
 

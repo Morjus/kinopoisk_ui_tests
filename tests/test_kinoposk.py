@@ -153,3 +153,6 @@ def test_buy_tickets_from_main_page(browser):
     main_page.open()
     # Сейчас нет этой карусели при открытии страницы
     main_page.select_random_movie_from_today_in_cinema()
+    movie_in_pay_frame = main_page.buy_random_tickets()
+    assert main_page.movie_to_go == movie_in_pay_frame, f"Названия фильма в виджете оплаты не совпадает, " \
+                                                        f"получено {movie_in_pay_frame}"
