@@ -21,8 +21,7 @@ class SearchPage(HeaderPage):
         guess = self.find(locator=self.MOST_WANTED_EL)
         return guess.text
 
-    def go_to_guessing_movie(self, movie_name):
+    def go_to_guessing_movie(self):
         movie_link = self.find(locator=self.MOST_WANTED_NAME)
         movie_link.click()
-        assert movie_name == self.find(locator=self.MOVIE_PAGE_NAME_HEADER).text
 

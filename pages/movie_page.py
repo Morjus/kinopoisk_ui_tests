@@ -14,6 +14,10 @@ class MoviePage(HeaderPage):
     MOVIE_NAME = (By.XPATH, '//h1/span[contains(text(), "")]')
     FIRST_MOVIE_IN_LIST = (By.CSS_SELECTOR, '.info .name')
 
+    TRAILERS = (By.CSS_SELECTOR, '.film-trailer [role="button"]')
+    IFRAME_TRAILER = (By.CSS_SELECTOR, 'div .discovery-trailers-wrapper iframe')
+    MOVIE_NAME_IN_IFRAME = (By.XPATH, '//a[contains (@href, "player")][contains(text(), "")][@class]') #a[href$="player"]  [contains (@href, "player")]
+
     def __init__(self, driver, url):
         super().__init__(driver, url)
         self.driver = driver
@@ -63,4 +67,13 @@ class MoviePage(HeaderPage):
             self.find(locator=self.WATCH_LATER_HEADER)
 
     def open_trailer(self):
-        pass
+        with allure.step("Ищу трейлеры на странице и нажимаю на самый первый"):
+            self.find(locator=self.TRAILERS).click()
+        with allure.step("Переключаюсь на iframe"):
+            # import time
+            # time.sleep(40)
+            iframe = self.find(locator=self.IFRAME_TRAILER)
+
+            self.driver.switch_to.frame(iframe)
+        with allure.step("Ищу заголовок фильма"):
+            return self.find(locator=self.MOVIE_NAME_IN_IFRAME).text

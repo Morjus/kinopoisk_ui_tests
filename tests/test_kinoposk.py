@@ -18,10 +18,13 @@ load_dotenv()
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Авторизация")
 @allure.story("Авторизация с валидными данными")
-def test_login(browser):
+@pytest.mark.parametrize('auth', [
+    (os.getenv("LOGIN"), os.getenv("PASSWORD"))
+])
+def test_login(browser, auth):
     page = HeaderPage(browser, url="https://www.kinopoisk.ru/")
     page.open()
-    page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+    page.login(*auth)
 
     main_page = MainPage(page.driver, page.driver.current_url)
     header = main_page.check_main_header()
@@ -48,10 +51,13 @@ def test_set_rating(browser, rating):
 @allure.epic("Возможности авторизованного юзера")
 @allure.feature("Папки с фильмами юзера")
 @allure.story("Добавление фильма в папку 'Смотреть позже' и его удаление")
-def test_add_to_watch_later(browser):
+@pytest.mark.parametrize('auth', [
+    (os.getenv("LOGIN"), os.getenv("PASSWORD"))
+])
+def test_add_to_watch_later(browser, auth):
     movie_page = MoviePage(browser, url="https://www.kinopoisk.ru/film/693969/")
     movie_page.open()
-    movie_page.login(os.getenv("LOGIN"), os.getenv("PASSWORD"))
+    movie_page.login(*auth)
 
     movie_page.add_to_watch_later()
     movie_name = movie_page.get_movie_name()
@@ -119,16 +125,17 @@ def test_promocode(browser):
 @allure.epic("Поиск")
 @allure.feature("Поисковая строка")
 @allure.story("Правильное название фильма в поиске ведет к результатам, где введенный в поиск фильм на первом месте")
-def test_search(browser):
-    name = "Аватар"
+@pytest.mark.parametrize("movie_to_search", ["Аватар"])
+def test_search(browser, movie_to_search):
+    movie_to_search = "Аватар"
 
     main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
     main_page.open()
-    main_page.search_movie(name)
+    main_page.search_movie(movie_to_search)
 
     search_page = SearchPage(main_page.driver, main_page.driver.current_url)
     found_movie = search_page.check_guessing_of_search()
-    assert found_movie == name, f"Попытка угадать неверная, предложен {found_movie}"
+    assert found_movie == movie_to_search, f"Попытка угадать неверная, предложен {found_movie}"
 
 
 @allure.epic("Статьи")
@@ -160,15 +167,17 @@ def test_buy_tickets_from_main_page(browser):
 
 @allure.epic("Страница фильма")
 @allure.feature("Трейлеры")
-@allure.story("Присутствие фильма на любой странце")
+@allure.story("Присутствие трейлера на любой странце")
 @pytest.mark.parametrize("movie_to_search", ["Аватар"])
 def test_trailers(browser, movie_to_search):
     search_page = SearchPage(browser, url="https://www.kinopoisk.ru/")
     search_page.open()
     search_page.search_movie(movie_to_search)
 
-    found_movie = search_page.check_guessing_of_search()
-    search_page.go_to_guessing_movie(found_movie)
+    search_page.check_guessing_of_search()
+    search_page.go_to_guessing_movie()
 
     movie_page = MoviePage(search_page.driver, search_page.driver.current_url)
-    movie_page.open_trailer()
+    movie_name = movie_page.get_movie_name()
+    name_in_iframe = movie_page.open_trailer()
+    assert movie_name == name_in_iframe, f"Имя фильма в открывшемся трейлере не совпадает со страницей"
