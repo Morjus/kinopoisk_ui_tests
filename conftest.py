@@ -45,35 +45,6 @@ def pytest_addoption(parser):
     parser.addoption("--selenoid", action="store", default="172.17.0.2")  # localhost
 
 
-# @pytest.fixture(scope="function")
-# def browser(request):
-#     options = ChromeOptions()
-#     options.add_argument("--start-maximized")
-#     options.add_argument('--ignore-certificate-errors')
-#     # options.add_argument("--headless")
-#     d = DesiredCapabilities.CHROME
-#     d['loggingPrefs'] = {'browser': 'ALL'}
-#     browser = EventFiringWebDriver(webdriver.Remote(command_executor="http://selenium__standalone-chrome:4444/wd/hub",
-#                                                     options=options, desired_capabilities=d), ScreenshotListener())
-#     with allure.step("Start chrome browser for test."):
-#
-#         def fin():
-#             try:
-#                 allure.attach(name=browser.session_id,
-#                               body=str(browser.desired_capabilities),
-#                               attachment_type=allure.attachment_type.JSON)
-#                 allure.attach(name="chrome log",
-#                               body=browser.get_log('browser'),
-#                               attachment_type=allure.attachment_type.TEXT)
-#             except TypeError as e:
-#                 logger.error(f'Oooops i got: {e}')
-#             finally:
-#                 with allure.step("Closing browser."):
-#                     browser.quit()
-#
-#         request.addfinalizer(fin)
-#         return browser
-
 @pytest.fixture(scope="function")
 def browser(request):
     options = ChromeOptions()
@@ -103,57 +74,3 @@ def browser(request):
 
         request.addfinalizer(fin)
         return browser
-
-# @pytest.fixture
-# def browser(request):
-#     browser = request.config.getoption("--browser")
-#     selenoid = request.config.getoption("--selenoid")
-#
-#     executor_url = f"http://{selenoid}:4444/wd/hub"
-#
-#     caps = {"browserName": browser,
-#             "version": "83.0",
-#             "enableVnc": True,
-#             "enableVideo": True,
-#             "enableLog": True,
-#             "screenResolution": "1280x720",
-#             "name": request.node.name}
-#
-#     browser = webdriver.Remote(command_executor=executor_url, desired_capabilities=caps)
-#     request.addfinalizer(browser.quit)
-#     return browser
-
-# @pytest.fixture(scope="function")
-# def browser(request):
-#     browser = request.config.getoption("--browser")
-#     selenoid = request.config.getoption("--selenoid")
-#
-#     executor_url = f"http://{selenoid}:4444/wd/hub"
-#
-#     caps = {"browserName": browser,
-#             "version": "83.0",
-#             "enableVnc": True,
-#             "enableVideo": True,
-#             "enableLog": True,
-#             "screenResolution": "1920x1080",
-#             "name": request.node.name}
-#     browser = EventFiringWebDriver(webdriver.Remote(command_executor=executor_url,
-#                                                     desired_capabilities=caps), ScreenshotListener())
-#     with allure.step("Start chrome browser for test."):
-#
-#         def fin():
-#             try:
-#                 allure.attach(name=browser.session_id,
-#                               body=str(browser.desired_capabilities),
-#                               attachment_type=allure.attachment_type.JSON)
-#                 allure.attach(name="browser log",
-#                               body=browser.get_log('browser'),
-#                               attachment_type=allure.attachment_type.TEXT)
-#             except TypeError as e:
-#                 logger.error(f'Oooops i got: {e}')
-#             finally:
-#                 with allure.step("Closing browser."):
-#                     browser.quit()
-#
-#         request.addfinalizer(fin)
-#         return browser
