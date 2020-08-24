@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.header_page import HeaderPage
 
@@ -22,13 +23,14 @@ class MoviePage(HeaderPage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
         self.number = None
         self.movie_name = None
 
     def get_movie_name(self):
         with allure.step("Выставляю русское имя фильма из заголовка в атрибуты объекта"):
-            movie_name = self.find(locator=self.MOVIE_NAME).text
+            movie_name = self.find(locator=self.MOVIE_NAME, time=30).text
             self.movie_name = movie_name
             return movie_name
 
@@ -70,10 +72,7 @@ class MoviePage(HeaderPage):
         with allure.step("Ищу трейлеры на странице и нажимаю на самый первый"):
             self.find(locator=self.TRAILERS).click()
         with allure.step("Переключаюсь на iframe"):
-            # import time
-            # time.sleep(40)
             iframe = self.find(locator=self.IFRAME_TRAILER)
-
             self.driver.switch_to.frame(iframe)
         with allure.step("Ищу заголовок фильма"):
             return self.find(locator=self.MOVIE_NAME_IN_IFRAME).text

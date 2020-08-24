@@ -1,7 +1,8 @@
 import allure
+import logging
 from random import choice
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from pages.header_page import HeaderPage
 
 
@@ -24,6 +25,7 @@ class MediaPage(HeaderPage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
     def go_to_tests_tab(self):
         numbers_of_headers = 20
@@ -66,7 +68,7 @@ class MediaPage(HeaderPage):
                 try:
                     with allure.step(f"Переход к следующему вопросу"):
                         self.find(locator=self.NEXT_QUESTION_BUTTON, time=1).click()
-                except TimeoutException:
+                except (TimeoutException, ElementClickInterceptedException):
                     pass
 
             try:
@@ -77,7 +79,7 @@ class MediaPage(HeaderPage):
                     answer.click()
                 with allure.step(f"Переход к последнему вопросу"):
                     self.find(locator=self.NEXT_QUESTION_BUTTON, time=1).click()
-            except TimeoutException:
+            except (TimeoutException, ElementClickInterceptedException):
                 pass
 
             with allure.step("Беру текст из картинки с результатом теста"):

@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
@@ -11,11 +12,11 @@ class RecommendationPage(BasePage):
 
     MOVIE_NAME = (By.CSS_SELECTOR, 'div div span img')
 
-
     def __init__(self, driver, url):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
     def switch_tab_to_online(self):
         with allure.step("Переключение на вкладку онлайн в рекомендациях"):

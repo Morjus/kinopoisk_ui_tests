@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.header_page import HeaderPage
 
@@ -15,13 +16,17 @@ class SearchPage(HeaderPage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
     def check_guessing_of_search(self):
-        self.is_element_present(locator=self.GUESS_HEADER)
+        with allure.step("Ищу заголовок с догадкой о цели поиска"):
+            self.is_element_present(locator=self.GUESS_HEADER)
         guess = self.find(locator=self.MOST_WANTED_EL)
-        return guess.text
+        with allure.step(f"Найден заголовок {guess}"):
+            return guess.text
 
     def go_to_guessing_movie(self):
-        movie_link = self.find(locator=self.MOST_WANTED_NAME)
-        movie_link.click()
+        with allure.step("Переход по ссылке к найденному в поиске фильму"):
+            movie_link = self.find(locator=self.MOST_WANTED_NAME)
+            movie_link.click()
 

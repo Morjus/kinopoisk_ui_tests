@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
@@ -23,6 +24,7 @@ class HdPage(BasePage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
     def get_name_of_opened_movie(self):
         with allure.step("Проверяю, что открылся фильм"):

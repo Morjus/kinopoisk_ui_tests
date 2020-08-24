@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
@@ -10,7 +11,7 @@ class HeaderPage(BasePage):
     SUBMIT_BUTTON = (By.XPATH, '//button[@type="submit"]')
     SKIP_PHONE_BUTTON = (By.XPATH, '//button[@type="button"]')
 
-    SEARCH_FIELD = (By.CSS_SELECTOR, "input[type='text']")
+    SEARCH_FIELD = (By.CSS_SELECTOR, "input[type='text'][name='kp_query']")
     SEARCH_BUTTON = (By.CSS_SELECTOR, 'button[type="submit"]')
 
     HD_LINK = (By.XPATH, '//a[contains(text(), "Онлайн-кинотеатр")]')
@@ -20,6 +21,7 @@ class HeaderPage(BasePage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
     def _set_email(self, email):
         with allure.step(f"Отправка {email} в {self.EMAIL_FIELD}"):
@@ -38,6 +40,8 @@ class HeaderPage(BasePage):
         self._set_passw(passw)
         with allure.step(f"Нажимаю кнопку {self.SUBMIT_BUTTON}"):
             self.find(locator=self.SUBMIT_BUTTON).click()
+        with allure.step("Жду появления поисковой строки"):
+            self.find(locator=self.SEARCH_FIELD, time=60)
         # with allure.step(f"Пропуск предложения привязать телефон"):
         #     self.find(locator=self.SKIP_PHONE_BUTTON).click()
 

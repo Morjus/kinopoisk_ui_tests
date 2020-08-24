@@ -22,11 +22,9 @@ load_dotenv()
     (os.getenv("LOGIN"), os.getenv("PASSWORD"))
 ])
 def test_login(browser, auth):
-    page = HeaderPage(browser, url="https://www.kinopoisk.ru/")
-    page.open()
-    page.login(*auth)
-
-    main_page = MainPage(page.driver, page.driver.current_url)
+    main_page = MainPage(browser, url="https://www.kinopoisk.ru/")
+    main_page.open()
+    main_page.login(*auth)
     header = main_page.check_main_header()
     assert header == "Главное сегодня", f"Заголовок 'Главное сегодня' не найден. Найдено: {header}"
 
@@ -103,7 +101,8 @@ def test_create_child_profile(browser):
     create_profile_page = HdProfilesPage(hd_page.driver, hd_page.driver.current_url)
     final_header = create_profile_page.create_child_profile("Зайка")
     assert final_header == 'Волшебный мир мультфильмов скрыт за подпиской', f"Заголовок найден, но иной:{final_header}"
-    # should add method for removing profile
+    result = create_profile_page.delete_child_profile()
+    assert result is True, f"Детский профиль не удален"
 
 
 @allure.epic("Акции для юзеров")

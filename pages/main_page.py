@@ -1,4 +1,5 @@
 import allure
+import logging
 from random import choice
 from selenium.webdriver.common.by import By
 from pages.header_page import HeaderPage
@@ -23,17 +24,19 @@ class MainPage(HeaderPage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
         self.movie_to_go = None
 
     def check_main_header(self):
         with allure.step(f"Ищу главный заголовок на странице"):
-            text = self.find(locator=self.MAIN_HEADER).text
+            text = self.find(locator=self.MAIN_HEADER, time=20).text
         return text
 
     def go_to_recommendations(self):
         with allure.step("Перехожу в рекомендации через главный блок"):
             self.find(locator=self.RECOMMENDATION_LINK).click()
-            self.find(locator=self.RECOMMENDATION_HEADER)
+        with allure.step("Ищу заголовок 'Рекомендации' на странице"):
+            self.find(locator=self.RECOMMENDATION_HEADER, time=30)
 
     def switch_tab_to_online(self):
         with allure.step("Переключение на вкладку онлайн в рекомендациях"):

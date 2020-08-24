@@ -1,4 +1,5 @@
 import allure
+import logging
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from pages.header_page import HeaderPage
@@ -14,6 +15,8 @@ class UserPage(HeaderPage):
         super().__init__(driver, url)
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
+
         self.movie = None
 
     def get_first_movie_in_watch_later_list(self):

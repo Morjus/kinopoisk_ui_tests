@@ -4,6 +4,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 import time
 import os
+import logging
 import allure
 from dotenv import load_dotenv
 load_dotenv()
@@ -14,26 +15,27 @@ class BasePage:
     def __init__(self, driver, url=None):
         self.driver = driver
         self.base_url = url
+        self.logger = logging.getLogger(type(self).__name__)
 
-    def find(self, locator, time=10):
+    def find(self, locator, time=25):
         with allure.step(f"Поиск элемента, {locator}"):
             return WebDriverWait(self.driver, time).until(
                 EC.presence_of_element_located(locator),
                 message=f"Can't find element by locator {locator}")
 
-    def find_interactable(self, locator, time=10):
+    def find_interactable(self, locator, time=25):
         with allure.step(f"Поиск интерактивного элемента, {locator}"):
             return WebDriverWait(self.driver, time).until(
                 EC.element_to_be_clickable(locator),
                 message=f"Can't find element by locator {locator}")
 
-    def finds(self, locator, time=10):
+    def finds(self, locator, time=25):
         with allure.step(f"Поиск элементов, {locator}"):
             return WebDriverWait(self.driver, time).until(
                 EC.presence_of_all_elements_located(locator),
                 message=f"Can't find elements by locator {locator}")
 
-    def is_element_present(self, locator, time=10):
+    def is_element_present(self, locator, time=25):
         with allure.step(f"Поиск видимых элементов на странице, {locator}"):
             try:
                 WebDriverWait(self.driver, time).until(
@@ -43,7 +45,7 @@ class BasePage:
                 return False
             return True
 
-    def is_not_element_present(self, locator, time=10):
+    def is_not_element_present(self, locator, time=25):
         with allure.step(f"Поиск элемента, которого не должно быть на странице, {locator}"):
             try:
                 WebDriverWait(self.driver, time).until(
@@ -64,6 +66,7 @@ class BasePage:
 
     def open(self):
         with allure.step(f"Переход на страницу, {self.base_url}"):
+            self.driver.maximize_window()
             return self.driver.get(self.base_url)
 
 
