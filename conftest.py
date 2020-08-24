@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, filename="test.log")
 
 
-class ScreenshotListener(AbstractEventListener):
+class SeleniumListener(AbstractEventListener):
 
     def before_click(self, element, driver):
         logging.info(f"I'm clicking {element}")
@@ -55,7 +55,7 @@ def browser(request):
     d['loggingPrefs'] = {'browser': 'ALL'}
     browser = EventFiringWebDriver(webdriver.Chrome(
         options=options, desired_capabilities=d
-    ), ScreenshotListener())
+    ), SeleniumListener())
     with allure.step("Start chrome browser for test."):
 
         def fin():
